@@ -30,6 +30,8 @@ import io.confluent.avro.random.generator.Generator;
 /**
  * This application publishes randomly generated Avro data to a given PubSub+ topic.
  * 
+ * @author ush shukla (Solace Inc.)
+ * 
  * <i>Configurable Properties</i>
  * solace.host            - Solace PubSub+ host to connect to in the form (tcp://{host}:{port})
  * solace.msgVpn          - Solace message VPN

@@ -6,7 +6,7 @@
 	<artifactId>datagenerator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Solace Data Generator</name>
-	<description>Publish randomly generated JSON data to a PubSub+ broker</description>
+	<description>Publish randomly generated Avro data to a PubSub+ broker</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
