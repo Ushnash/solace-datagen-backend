@@ -97,7 +97,7 @@ Let's say we have the following Avro schema that defines a list of possible "sto
 }
 ```
 
-If we define our topic string as `stores/{store_id}/{city}/{state}`, during message publication, this would result in topics with the placeholder levels substituted with randomly generated values i.e.:
+If we set `datagen.topic=stores/{store_id}/{city}/{state}` then message would be published onto topics of the form:
 
 `stores/3/Scaramento/CA`
 
@@ -105,9 +105,13 @@ If we define our topic string as `stores/{store_id}/{city}/{state}`, during mess
 
 `stores/7/Lexington/SC`
 
+That is, each placeholder is substituted with a value from the generated payload.
+
 
 ## Keys
 Users can apply keys to published events in order to use [Partitioned Queues](https://docs.solace.com/Messaging/Guaranteed-Msg/Partitioned-Queue-Messaging.htm). Similar to topics, keys can be static or dynamic.
+
+e.g. `datagen.key=some_key` or `datagen.key={store_id}`.
 
 ### Custom Schemas
 To use custom Avro schemas, add them to the `/resources` folder & recompile the utility. Hot-loading of schemas is unsupported.
