@@ -11,7 +11,7 @@
 
 The Solace Data Generator publishes random [Avro](https://avro.apache.org/) data to topics on a Solace PubSub+ broker. The data is created using the [Avro Random Generator (ARG)](https://github.com/confluentinc/avro-random-generator) library.
 
-The [schema](#custom-schemas) selected at runtime determine the flavor (stores, pizza orders, inventory, stock trades,...) of data that is generated.
+The [schema](#custom-schemas) selected at runtime determines the flavor (stores, pizza orders, inventory, stock trades,...) of data that is generated.
 
 ## Usage
 
@@ -97,7 +97,7 @@ Let's say we have the following Avro schema that defines a list of possible "sto
 }
 ```
 
-If we set `datagen.topic=stores/{store_id}/{city}/{state}` then message would be published onto topics of the form:
+If we set `datagen.topic=stores/{store_id}/{city}/{state}` then events would be published onto topics of the form:
 
 `stores/3/Scaramento/CA`
 
