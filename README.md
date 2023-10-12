@@ -1,12 +1,23 @@
-# Solace Data Generator
+# Table of Contents
 
-The Solace Data Generator publishes random [Avro](https://avro.apache.org/) payloads to a Solace PubSub+ instance using the [Avro Random Generator](https://github.com/confluentinc/avro-random-generator) utility (ARG).
+- [Overview](#overview)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Topics](#topics)
+- [Event Keys](#keys)
+- [Using Custom Avro Schemas](#custom-schemas)
+
+# Overview
+
+The Solace Data Generator publishes random [Avro](https://avro.apache.org/) data to topics on a Solace PubSub+ broker. The data is created using the [Avro Random Generator (ARG)](https://github.com/confluentinc/avro-random-generator) library.
+
+The [schema](#custom-schemas) selected at runtime determine the flavor (stores, pizza orders, inventory, stock trades,...) of data that is generated.
 
 ## Usage
 
-`java -jar solace-data-generator.jar -D...`
+`java -jar solace-data-generator.jar -D<propertyName>=<value>`.
 
-## Configurable Properties
+## Configuration
  
 |Property | Description | Example
 |--|--|--|
@@ -20,32 +31,83 @@ The Solace Data Generator publishes random [Avro](https://avro.apache.org/) payl
 |`datagen.publishdelayms`|How many milliseconds to wait between message publications| `2000`
 
 
-## Schemas
-The type of data generated depends on the schema file set with `datagen.schema`. All available schemas are located in `src/main/resources/schemas/`.
-
-## Using Custom Schemas
-The utility supports custom Avro schemas provided they are:
-
-1. Syntactically valid.
-1. Placed in the `/resources/schemas` folder.
-
-
-## Using Topics & Topic Placeholders
+## Topics
 Topics can be be static, dynamic, or both.
 
 ### Static Topics
-Static topics are those where the value of each level is a string literal e.g. `solace/sample/topic`
+Static topics have predefined values for each level. e.g. `solace/sample/topic` or `order/pizza/cancelled`.
 
-### Placeholders & Dynamic Topics
-With dynamic topics, topic levels reference _schema fields_, and the value of a given level is determined at runtime. To reference a schema-field, enclose it in `{...}` .
+### Dynamic Topics
+Dynamic topics contain topic-levels that reference _fields in the deployed schema_ . These values are determined at the time a message is published. To reference a schema-field, enclose it in `{...}`.
 
-e.g. Whenever the data generator publishes on `{company}/payroll/{department}`, the `{company}` & `{department}` fields dynamically change based on the randomly generated data.
+#### Example
+Let's say we have the following Avro schema that defines a list of possible "stores":
 
-__Additional Examples__
-`solace/sample/topic`
-`{company}/payroll/{department`
-`{company}/{department}/{employee_name}`
+```java
+{
+        "namespace": "datagen.example",
+        "name": "stores",
+        "type": "record",
+        "fields": [
+                {
+                  "name": "store_id",
+                  "type": "int"
+                },
+                {
+                  "name": "city",
+                  "type": "string"
+                },
+                {
+                  "name": "state",
+                  "type": "string"
+                }
+         ],
+         "arg.properties": {
+           "options": [
+                { "store_id": 1,
+                  "city": "Raleigh",
+                  "state": "NC"
+                },
+                { "store_id": 2,
+                  "city": "Chicago",
+                  "state": "IL"
+                },
+                { "store_id": 3,
+                  "city": "Sacramento",
+                  "state": "CA"
+                },
+                { "store_id": 4,
+                  "city": "Austin",
+                  "state": "TX"
+                },
+                { "store_id": 5,
+                  "city": "Boston",
+                  "state": "MA"
+                },
+                { "store_id": 6,
+                  "city": "Atlanta",
+                  "state": "GA"
+                },
+                { "store_id": 7,
+                  "city": "Lexington",
+                  "state": "SC"
+                }
+            ]
+         }
+}
+```
+
+If we define our topic string as `stores/{store_id}/{city}/{state}`, during message publication, this would result in topics with the placeholder levels substituted with randomly generated values i.e.:
+
+`stores/3/Scaramento/CA`
+
+`stores/1/Raleigh/NC`
+
+`stores/7/Lexington/SC`
+
 
 ## Keys
-Users can apply keys to published messages for the purposes of using [Partitioned Queues](https://docs.solace.com/Messaging/Guaranteed-Msg/Partitioned-Queue-Messaging.htm). Similar to topics, keys can be static or dynamic, following the same conventions detailed above.
+Users can apply keys to published events in order to use [Partitioned Queues](https://docs.solace.com/Messaging/Guaranteed-Msg/Partitioned-Queue-Messaging.htm). Similar to topics, keys can be static or dynamic.
 
+### Custom Schemas
+To use custom Avro schemas, add them to the `/resources` folder & recompile the utility. Hot-loading of schemas is unsupported.
